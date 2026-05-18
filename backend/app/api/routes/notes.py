@@ -74,17 +74,17 @@ async def search_notes(
             n.uploader_id,
             u.username AS uploader_username,
             CASE
-                WHEN :query IS NOT NULL
-                THEN ts_rank(n.search_vector, plainto_tsquery('english', :query))
+                WHEN CAST(:query AS TEXT) IS NOT NULL
+                THEN ts_rank(n.search_vector, plainto_tsquery('english', CAST(:query AS TEXT)))
                 ELSE 0
             END AS relevance_score
         FROM notes n
         JOIN users u ON u.id = n.uploader_id
         WHERE
-            (:query   IS NULL OR n.search_vector @@ plainto_tsquery('english', :query))
-            AND (:subject IS NULL OR n.subject = :subject)
-            AND (:course  IS NULL OR n.course  = :course)
-            AND (:topic   IS NULL OR n.topic   = :topic)
+            (CAST(:query AS TEXT) IS NULL OR n.search_vector @@ plainto_tsquery('english', CAST(:query AS TEXT)))
+            AND (CAST(:subject AS TEXT) IS NULL OR n.subject = CAST(:subject AS TEXT))
+            AND (CAST(:course AS TEXT) IS NULL OR n.course = CAST(:course AS TEXT))
+            AND (CAST(:topic AS TEXT) IS NULL OR n.topic = CAST(:topic AS TEXT))
         ORDER BY relevance_score DESC, n.average_rating DESC
         LIMIT 50
     """)

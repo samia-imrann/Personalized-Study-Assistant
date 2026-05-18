@@ -85,3 +85,24 @@ class StudyMaterialOut(BaseModel):
     material_type: str
     topic_name: Optional[str] = None
     model_config = {"from_attributes": True}
+
+
+class QuestionCreate(BaseModel):
+    question_text: str
+    options: list[str]
+    correct_index: int
+    difficulty: str = "medium"
+
+
+class QuizCreate(BaseModel):
+    title: str
+    topic_id: int
+    questions: list[QuestionCreate]
+
+
+class StudyMaterialCreate(BaseModel):
+    title: str
+    description: str = ""
+    url: str
+    topic_id: int
+    material_type: str = "article"

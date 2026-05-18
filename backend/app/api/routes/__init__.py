@@ -1,1 +1,1 @@
-from app.api.routes import auth, quiz, performance, notes, collab
+from app.api.routes import auth, quiz, performance, notes, collab, admin

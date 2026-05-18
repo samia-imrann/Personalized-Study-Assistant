@@ -11,7 +11,7 @@ from app.core.security import decode_token
 from app.db.session import AsyncSessionLocal
 from app.models.document import Document, DocumentCollaborator
 from app.models.user import User
-from app.schemas.document import DocumentCreate, DocumentDetailOut, DocumentOut, InviteRequest, DocumentUpdate
+from app.schemas.document import DocumentCreate, DocumentDetailOut, DocumentOut, InviteRequest
 from app.services.collab_service import (
     apply_and_broadcast,
     get_or_load_doc,
@@ -92,32 +92,6 @@ async def get_document(
     )
 
 
-@router.put("/{doc_id}", response_model=DocumentOut)
-async def update_document(
-    doc_id: uuid.UUID,
-    body: DocumentUpdate,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    doc = await _require_access(doc_id, current_user.id, db)
-    doc.content = body.content
-    try:
-        from app.redis_client import redis_client
-        await redis_client.set(f"doc:{doc_id}", body.content, ex=3600)
-    except Exception as e:
-        print(f"Redis set failed in PUT update_document: {e}")
-    await db.commit()
-    await db.refresh(doc)
-    return DocumentOut(
-        id=doc.id,
-        title=doc.title,
-        owner_id=doc.owner_id,
-        created_at=doc.created_at,
-        updated_at=doc.updated_at,
-        is_owner=(doc.owner_id == current_user.id),
-    )
-
-
 @router.delete("/{doc_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_document(
     doc_id: uuid.UUID,
@@ -185,21 +159,20 @@ async def collab_ws(
     # Verify document access
     try:
         doc_uuid = uuid.UUID(doc_id)
-        user_uuid = uuid.UUID(user_id)
     except ValueError:
         await websocket.close(code=4002)
         return
 
+    # Use a dedicated long-lived session for the WebSocket lifetime
     async with AsyncSessionLocal() as db:
-        # Check if user has access (either owner or collaborator)
-        try:
-            doc = await _require_access(doc_uuid, user_uuid, db)
-        except Exception:
-            await websocket.close(code=4003)
+        result = await db.execute(select(Document).where(Document.id == doc_uuid))
+        doc = result.scalar_one_or_none()
+        if not doc:
+            await websocket.close(code=4004)
             return
 
         # Get user info
-        user_result = await db.execute(select(User).where(User.id == user_uuid))
+        user_result = await db.execute(select(User).where(User.id == uuid.UUID(user_id)))
         user = user_result.scalar_one_or_none()
         if not user:
             await websocket.close(code=4001)
@@ -224,7 +197,11 @@ async def collab_ws(
             # Notify others
             await manager.broadcast(doc_id, {
                 "type": "user_joined",
-                "payload": {"userId": user_id, "username": user.username, "activeUsers": manager.active_users(doc_id)},
+                "payload": {
+                    "userId": user_id,
+                    "username": user.username,
+                    "activeUsers": manager.active_users(doc_id),
+                },
             }, exclude_user=user_id)
 
             # Listen for messages
@@ -253,7 +230,11 @@ async def collab_ws(
             manager.disconnect(doc_id, user_id)
             await manager.broadcast(doc_id, {
                 "type": "user_left",
-                "payload": {"userId": user_id, "username": user.username, "activeUsers": manager.active_users(doc_id)},
+                "payload": {
+                    "userId": user_id,
+                    "username": user.username,
+                    "activeUsers": manager.active_users(doc_id),
+                },
             })
             # Always persist on disconnect regardless of how many users remain
             async with AsyncSessionLocal() as save_db:

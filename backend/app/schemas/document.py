@@ -26,6 +26,10 @@ class InviteRequest(BaseModel):
     email: str
 
 
+class DocumentUpdate(BaseModel):
+    content: str
+
+
 class CollabMessage(BaseModel):
     type: str          # "init" | "edit" | "user_joined" | "user_left" | "cursor"
     payload: dict

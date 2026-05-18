@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.core.config import settings
-from app.api.routes import auth, quiz, performance, notes, collab
+from app.api.routes import auth, quiz, performance, notes, collab, admin
 from app.services.ml_engine import get_model
 
 
@@ -20,6 +20,28 @@ async def lifespan(app: FastAPI):
         print("✅ ML recommender model loaded")
     else:
         print("⚠️  ML model not found — using DB fallback for recommendations")
+
+    # Seed default admin user if none exists
+    from app.db.session import AsyncSessionLocal
+    from app.models.user import User
+    from app.core.security import hash_password
+    from sqlalchemy import select
+
+    async with AsyncSessionLocal() as db:
+        try:
+            res = await db.execute(select(User).where(User.email == "admin@adaptiq.com"))
+            if not res.scalars().first():
+                admin = User(
+                    username="admin",
+                    email="admin@adaptiq.com",
+                    password_hash=hash_password("admin123"),
+                    is_admin=True,
+                )
+                db.add(admin)
+                await db.commit()
+                print("👑 Seeded default admin user (admin@adaptiq.com / admin123)")
+        except Exception as e:
+            print(f"❌ Error seeding admin: {e}")
     yield
     # Shutdown — nothing to clean up
 
@@ -51,6 +73,7 @@ app.include_router(quiz.router)
 app.include_router(performance.router)
 app.include_router(notes.router)
 app.include_router(collab.router)
+app.include_router(admin.router)
 
 
 @app.get("/", tags=["Health"])
