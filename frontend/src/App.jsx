@@ -11,6 +11,8 @@ import { QuizAttemptPage } from './pages/QuizAttemptPage';
 import { NotesPage } from './pages/NotesPage';
 import { NoteDetailPage } from './pages/NoteDetailPage';
 import { CollabPage } from './pages/CollabPage';
+import { AdminRoute } from './components/Auth/AdminRoute';
+import { AdminDashboardPage } from './pages/AdminDashboardPage';
 
 function App() {
   return (
@@ -28,6 +30,10 @@ function App() {
               <Route path="/notes" element={<NotesPage />} />
               <Route path="/notes/:id" element={<NoteDetailPage />} />
               <Route path="/collab" element={<CollabPage />} />
+              
+              <Route element={<AdminRoute />}>
+                <Route path="/admin" element={<AdminDashboardPage />} />
+              </Route>
             </Route>
           </Route>
           

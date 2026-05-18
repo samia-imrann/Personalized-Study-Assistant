@@ -1,0 +1,28 @@
+Set up database in postgresql
+createdb adaptiq
+
+In one terminal run these commands:
+
+cd Backend
+python -m venv venv
+venv\Scripts\Activate  # Windows
+# source venv/bin/activate  # macOS/Linux
+
+pip install -r requirements.txt
+
+
+python seed.py
+
+
+python ../ml/train_recommender.py
+
+
+uvicorn app.main:app --reload --port 8000
+
+In other terminal run these commands:
+
+cd Frontend
+npm install
+npm run dev
+
+Visit http://localhost:5173
