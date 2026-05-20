@@ -56,7 +56,14 @@ app = FastAPI(
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.frontend_url, "http://localhost:5173", "http://localhost:3000", "https://personalized-study-assistant.vercel.app"],
+    allow_origins=[
+        settings.frontend_url,
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "https://personalized-study-assistant.vercel.app",
+        "https://personalized-study-assistant-git-main-samia-imrans-projects.vercel.app",
+        "https://personalized-study-assistant-6n1pkk5mc-samia-imrans-projects.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
