@@ -4,11 +4,11 @@
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 antialiased font-sans;
+    @apply bg-theme-bg text-theme-dark antialiased font-sans overflow-hidden;
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Outfit', sans-serif;
-    @apply tracking-tight text-slate-900;
+    @apply tracking-tight text-theme-dark;
   }
 }
 
