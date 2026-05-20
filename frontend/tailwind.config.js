@@ -7,6 +7,17 @@ export default {
   theme: {
     extend: {
       colors: {
+        theme: {
+          bg: '#e8eff5', // Soft, pale blue background
+          sidebar: '#dde6f0', // Slightly darker pale blue for sidebar
+          card: '#ffffff', // Clean white for cards
+          cardHover: '#f4f7fb', // Subtle hover tint
+          dark: '#1e293b', // Deep navy/slate for text
+          accent: '#3b82f6', // Bright, modern blue accent
+          pink: '#f43f5e', // Retaining a coral/pink for highlights
+          teal: '#14b8a6', // Teal for highlights
+          yellow: '#f59e0b' // Amber for highlights
+        },
         brand: {
           50: '#f0f9ff',
           100: '#e0f2fe',
