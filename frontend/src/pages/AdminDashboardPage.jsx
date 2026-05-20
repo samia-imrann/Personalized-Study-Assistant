@@ -224,31 +224,31 @@ export const AdminDashboardPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-800">
+      <div className="h-full flex items-center justify-center bg-theme-bg text-theme-dark">
         <div className="flex flex-col items-center space-y-4">
-          <Loader2 className="w-12 h-12 text-brand-600 animate-spin" />
-          <p className="text-slate-500 font-semibold animate-pulse">Initializing Security Protocols...</p>
+          <Loader2 className="w-12 h-12 text-theme-accent animate-spin" />
+          <p className="text-theme-dark/60 font-semibold animate-pulse">Initializing Administrative Console...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 p-8">
+    <div className="h-full flex flex-col max-w-[1400px] mx-auto animate-fade-in pb-4">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 pb-6 border-b border-slate-200">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 shrink-0">
         <div>
           <div className="flex items-center space-x-3">
-            <ShieldCheck className="w-8 h-8 text-brand-600" />
-            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">
+            <ShieldCheck className="w-8 h-8 text-theme-accent" />
+            <h1 className="text-3xl font-display font-medium text-theme-dark uppercase tracking-wide">
               Admin Portal
             </h1>
           </div>
-          <p className="text-slate-500 mt-1">Platform administration, user controls, and resource moderation.</p>
+          <p className="text-theme-dark/60 mt-1 text-sm">Platform administration, user controls, and resource moderation.</p>
         </div>
         
         {/* Tab Navigation */}
-        <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 mt-4 md:mt-0 shadow-sm">
+        <div className="flex bg-theme-sidebar p-1.5 rounded-full mt-4 md:mt-0 shadow-sm border border-theme-dark/5">
           {[
             { id: 'overview', name: 'Overview' },
             { id: 'quizzes', name: 'Quizzes' },
@@ -259,10 +259,10 @@ export const AdminDashboardPage = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${
+              className={`px-5 py-2 rounded-full font-bold text-xs transition-all ${
                 activeTab === tab.id 
-                  ? 'bg-brand-600 text-white shadow-md' 
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                  ? 'bg-theme-accent text-white shadow-sm' 
+                  : 'text-theme-dark/60 hover:text-theme-dark hover:bg-theme-card/50'
               }`}
             >
               {tab.name}
@@ -273,508 +273,521 @@ export const AdminDashboardPage = () => {
 
       {/* Messaging Alert banner */}
       {message.text && (
-        <div className={`mb-6 p-4 rounded-xl flex items-center space-x-3 border ${
+        <div className={`mb-6 p-4 rounded-2xl flex items-center space-x-3 border shrink-0 ${
           message.type === 'success' 
-            ? 'bg-emerald-50 border-emerald-200 text-emerald-800' 
-            : 'bg-rose-50 border-rose-200 text-rose-800'
+            ? 'bg-theme-teal/15 border-theme-teal/20 text-theme-teal' 
+            : 'bg-theme-pink/15 border-theme-pink/20 text-theme-pink'
         }`}>
           <AlertTriangle className="w-5 h-5 flex-shrink-0" />
-          <span className="font-semibold text-sm">{message.text}</span>
+          <span className="font-bold text-xs uppercase tracking-wide">{message.text}</span>
         </div>
       )}
 
-      {/* tab: OVERVIEW */}
-      {activeTab === 'overview' && (
-        <div className="space-y-8">
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { label: 'Total Users', count: stats.users, icon: Users, bg: 'bg-blue-50 text-blue-600 border-blue-100' },
-              { label: 'Interactive Quizzes', count: stats.quizzes, icon: BookOpen, bg: 'bg-purple-50 text-purple-600 border-purple-100' },
-              { label: 'Study Materials', count: stats.study_materials, icon: FileCheck, bg: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
-              { label: 'Community Notes', count: stats.notes, icon: FileText, bg: 'bg-rose-50 text-rose-600 border-rose-100' }
-            ].map((card, i) => {
-              const Icon = card.icon;
-              return (
-                <div 
-                  key={i}
-                  className="bg-white border border-slate-200/80 p-6 rounded-2xl flex items-center space-x-5 hover:shadow-md transition-all shadow-sm"
-                >
-                  <div className={`p-4 rounded-xl border ${card.bg}`}>
-                    <Icon className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <p className="text-slate-500 text-xs font-bold uppercase tracking-wider">{card.label}</p>
-                    <p className="text-3xl font-black text-slate-900 mt-1">{card.count}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Quick Stats Panel */}
-          <div className="bg-white border border-slate-200 p-8 rounded-2xl shadow-sm">
-            <h2 className="text-xl font-bold flex items-center space-x-2 text-slate-900">
-              <Activity className="w-5 h-5 text-brand-600" />
-              <span>Platform Health Log</span>
-            </h2>
-            <div className="mt-6 space-y-4 text-sm text-slate-600">
-              <div className="flex justify-between py-3 border-b border-slate-100">
-                <span className="font-semibold text-slate-700">Database Sync Status</span>
-                <span className="text-emerald-600 font-bold flex items-center"><Check className="w-4 h-4 mr-1"/> Active & Synchronized</span>
-              </div>
-              <div className="flex justify-between py-3 border-b border-slate-100">
-                <span className="font-semibold text-slate-700">AI Recommendation Engine</span>
-                <span className="text-slate-800 font-bold">Active (Cosine Similarity Model)</span>
-              </div>
-              <div className="flex justify-between py-3">
-                <span className="font-semibold text-slate-700">Primary Super Admin</span>
-                <span className="text-brand-600 font-bold">admin@adaptiq.com</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* tab: QUIZZES */}
-      {activeTab === 'quizzes' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* List existing quizzes */}
-          <div className="lg:col-span-2 space-y-6">
-            <h2 className="text-xl font-bold text-slate-900">Existing Quizzes ({quizzes.length})</h2>
-            <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-wider">
-                    <th className="p-4">Quiz Title</th>
-                    <th className="p-4">Topic ID</th>
-                    <th className="p-4">Created At</th>
-                    <th className="p-4 text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700">
-                  {quizzes.map((q) => (
-                    <tr key={q.id} className="hover:bg-slate-50/50 transition-all text-sm">
-                      <td className="p-4 font-bold text-slate-900">{q.title}</td>
-                      <td className="p-4 text-slate-600 font-medium">Topic #{q.topic_id}</td>
-                      <td className="p-4 text-slate-500">{new Date(q.created_at).toLocaleDateString()}</td>
-                      <td className="p-4 text-right">
-                        <button
-                          disabled={actionLoading}
-                          onClick={() => handleDeleteQuiz(q.id)}
-                          className="text-rose-600 hover:text-rose-500 p-2 rounded-lg hover:bg-rose-50 transition-all"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                  {quizzes.length === 0 && (
-                    <tr>
-                      <td colSpan="4" className="p-8 text-center text-slate-400">No quizzes available.</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Create Quiz Form */}
-          <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm h-fit">
-            <h2 className="text-xl font-bold flex items-center space-x-2 mb-6 text-slate-900">
-              <Plus className="w-5 h-5 text-brand-600" />
-              <span>Create New Quiz</span>
-            </h2>
-            <form onSubmit={handleCreateQuiz} className="space-y-6">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Quiz Title</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Advanced Database Optimization"
-                  value={quizForm.title}
-                  onChange={(e) => setQuizForm({ ...quizForm, title: e.target.value })}
-                  className="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-all"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Subject</label>
-                  <select
-                    value={selectedSubject}
-                    onChange={(e) => { setSelectedSubject(e.target.value); setQuizForm({ ...quizForm, topic_id: '' }); }}
-                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-3 text-sm text-slate-900 focus:border-brand-500 focus:outline-none"
+      {/* Main Content Area - Scrollable */}
+      <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar min-h-0">
+        
+        {/* tab: OVERVIEW */}
+        {activeTab === 'overview' && (
+          <div className="space-y-8 pb-6">
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                { label: 'Total Users', count: stats.users, icon: Users, bg: 'bg-theme-accent/15 text-theme-accent border-theme-accent/20' },
+                { label: 'Interactive Quizzes', count: stats.quizzes, icon: BookOpen, bg: 'bg-theme-yellow/15 text-theme-yellow border-theme-yellow/20' },
+                { label: 'Study Resources', count: stats.study_materials, icon: FileCheck, bg: 'bg-theme-teal/15 text-theme-teal border-theme-teal/20' },
+                { label: 'Community Notes', count: stats.notes, icon: FileText, bg: 'bg-theme-pink/15 text-theme-pink border-theme-pink/20' }
+              ].map((card, i) => {
+                const Icon = card.icon;
+                return (
+                  <div 
+                    key={i}
+                    className="bg-theme-card border border-theme-dark/5 p-6 rounded-[32px] flex items-center space-x-5 shadow-sm"
                   >
-                    <option value="">Choose Subject</option>
-                    {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Topic</label>
-                  <select
-                    required
-                    value={quizForm.topic_id}
-                    onChange={(e) => setQuizForm({ ...quizForm, topic_id: parseInt(e.target.value) })}
-                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-3 text-sm text-slate-900 focus:border-brand-500 focus:outline-none"
-                  >
-                    <option value="">Choose Topic</option>
-                    {filteredTopics.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-                  </select>
-                </div>
-              </div>
-
-              {/* Dynamic Questions Builder */}
-              <div className="space-y-4 pt-4 border-t border-slate-100">
-                <div className="flex justify-between items-center">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600">Questions ({quizForm.questions.length})</label>
-                  <button
-                    type="button"
-                    onClick={addQuestion}
-                    className="flex items-center space-x-1 text-xs text-brand-600 hover:text-brand-700 font-bold"
-                  >
-                    <Plus className="w-3.5 h-3.5" /> <span>Add Question</span>
-                  </button>
-                </div>
-
-                {quizForm.questions.map((q, qIndex) => (
-                  <div key={qIndex} className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs font-bold text-slate-500">Question #{qIndex + 1}</span>
-                      {quizForm.questions.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => removeQuestion(qIndex)}
-                          className="text-xs text-rose-600 hover:text-rose-700 font-bold"
-                        >
-                          Remove
-                        </button>
-                      )}
+                    <div className={`p-4 rounded-2xl border ${card.bg}`}>
+                      <Icon className="w-6 h-6" />
                     </div>
                     <div>
-                      <input
-                        type="text"
-                        required
-                        placeholder="Question Prompt"
-                        value={q.question_text}
-                        onChange={(e) => handleQuestionChange(qIndex, 'question_text', e.target.value)}
-                        className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:border-brand-500 focus:outline-none"
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      {q.options.map((opt, oIndex) => (
-                        <input
-                          key={oIndex}
-                          type="text"
-                          required
-                          placeholder={`Option ${oIndex + 1}`}
-                          value={opt}
-                          onChange={(e) => handleOptionChange(qIndex, oIndex, e.target.value)}
-                          className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:border-brand-500 focus:outline-none"
-                        />
-                      ))}
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="text-[10px] uppercase font-bold text-slate-500">Correct Option</label>
-                        <select
-                          value={q.correct_index}
-                          onChange={(e) => handleQuestionChange(qIndex, 'correct_index', parseInt(e.target.value))}
-                          className="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-xs text-slate-900 focus:border-brand-500 focus:outline-none animate-none"
-                        >
-                          {q.options.map((_, idx) => (
-                            <option key={idx} value={idx}>Option {idx + 1}</option>
-                          ))}
-                        </select>
-                      </div>
-                      <div>
-                        <label className="text-[10px] uppercase font-bold text-slate-500">Difficulty</label>
-                        <select
-                          value={q.difficulty}
-                          onChange={(e) => handleQuestionChange(qIndex, 'difficulty', e.target.value)}
-                          className="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-xs text-slate-900 focus:border-brand-500 focus:outline-none"
-                        >
-                          <option value="easy">Easy</option>
-                          <option value="medium">Medium</option>
-                          <option value="hard">Hard</option>
-                        </select>
-                      </div>
+                      <p className="text-theme-dark/40 text-[10px] font-bold uppercase tracking-wider">{card.label}</p>
+                      <p className="text-2xl font-black text-theme-dark mt-1 leading-none">{card.count}</p>
                     </div>
                   </div>
-                ))}
+                );
+              })}
+            </div>
+
+            {/* Quick Stats Panel */}
+            <div className="bg-theme-card border border-theme-dark/5 p-8 rounded-[32px] shadow-sm">
+              <h2 className="text-base font-bold flex items-center space-x-2 text-theme-dark uppercase tracking-wide">
+                <Activity className="w-5 h-5 text-theme-accent" />
+                <span>Platform Health Log</span>
+              </h2>
+              <div className="mt-6 space-y-3 text-sm text-theme-dark/80">
+                <div className="flex justify-between py-3 border-b border-theme-dark/5">
+                  <span className="font-semibold text-theme-dark/70">Database Sync Status</span>
+                  <span className="text-theme-teal font-bold flex items-center"><Check className="w-4 h-4 mr-1"/> Active & Synchronized</span>
+                </div>
+                <div className="flex justify-between py-3 border-b border-theme-dark/5">
+                  <span className="font-semibold text-theme-dark/70">AI Recommendation Engine</span>
+                  <span className="text-theme-dark font-bold">Active (Cosine Similarity Model)</span>
+                </div>
+                <div className="flex justify-between py-3">
+                  <span className="font-semibold text-theme-dark/70">Primary Super Admin</span>
+                  <span className="text-theme-accent font-bold">admin@adaptiq.com</span>
+                </div>
               </div>
-
-              <button
-                type="submit"
-                disabled={actionLoading}
-                className="w-full bg-brand-600 hover:bg-brand-700 disabled:bg-brand-300 text-white font-bold py-3 rounded-xl transition-all flex items-center justify-center space-x-2 shadow-md shadow-brand-100"
-              >
-                {actionLoading && <Loader2 className="w-4 h-4 animate-spin text-white" />}
-                <span>Publish Interactive Quiz</span>
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* tab: MATERIALS */}
-      {activeTab === 'materials' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* List study resources */}
-          <div className="lg:col-span-2 space-y-6">
-            <h2 className="text-xl font-bold text-slate-900">Platform Study Resources ({studyMaterials.length})</h2>
-            <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-wider">
-                    <th className="p-4">Resource Details</th>
-                    <th className="p-4">Topic</th>
-                    <th className="p-4">Type</th>
-                    <th className="p-4 text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700">
-                  {studyMaterials.map((m) => (
-                    <tr key={m.id} className="hover:bg-slate-50/50 transition-all text-sm">
-                      <td className="p-4">
-                        <p className="font-bold text-slate-900">{m.title}</p>
-                        <p className="text-xs text-slate-500 truncate w-64">{m.description || 'No description'}</p>
-                        <a 
-                          href={m.url} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
-                          className="text-xs text-brand-600 hover:underline inline-block mt-0.5 truncate w-64 font-medium"
-                        >
-                          {m.url}
-                        </a>
-                      </td>
-                      <td className="p-4 text-slate-600 font-medium">{m.topic_name || `Topic #${m.topic_id}`}</td>
-                      <td className="p-4">
-                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200 capitalize">
-                          {m.material_type}
-                        </span>
-                      </td>
-                      <td className="p-4 text-right">
-                        <button
-                          disabled={actionLoading}
-                          onClick={() => handleDeleteMaterial(m.id)}
-                          className="text-rose-600 hover:text-rose-500 p-2 rounded-lg hover:bg-rose-50 transition-all"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                  {studyMaterials.length === 0 && (
-                    <tr>
-                      <td colSpan="4" className="p-8 text-center text-slate-400">No study resources uploaded.</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
             </div>
           </div>
+        )}
 
-          {/* Upload Resource Form */}
-          <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm h-fit">
-            <h2 className="text-xl font-bold flex items-center space-x-2 mb-6 text-slate-900">
-              <FileUp className="w-5 h-5 text-brand-600" />
-              <span>Upload Study Resource</span>
-            </h2>
-            <form onSubmit={handleCreateMaterial} className="space-y-6">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Resource Title</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Introduction to CPU Register Maps"
-                  value={materialForm.title}
-                  onChange={(e) => setMaterialForm({ ...materialForm, title: e.target.value })}
-                  className="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-all"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Brief Description</label>
-                <textarea
-                  placeholder="Summarize the resource content..."
-                  value={materialForm.description}
-                  onChange={(e) => setMaterialForm({ ...materialForm, description: e.target.value })}
-                  className="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-900 focus:border-brand-500 focus:outline-none h-24 resize-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">External URL / Document Path</label>
-                <input
-                  type="url"
-                  required
-                  placeholder="https://example.com/lecture_note.pdf"
-                  value={materialForm.url}
-                  onChange={(e) => setMaterialForm({ ...materialForm, url: e.target.value })}
-                  className="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-all"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Subject</label>
-                  <select
-                    value={selectedSubject}
-                    onChange={(e) => { setSelectedSubject(e.target.value); setMaterialForm({ ...materialForm, topic_id: '' }); }}
-                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-3 text-sm text-slate-900 focus:border-brand-500 focus:outline-none"
-                  >
-                    <option value="">Choose Subject</option>
-                    {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                  </select>
+        {/* tab: QUIZZES */}
+        {activeTab === 'quizzes' && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-6">
+            {/* List existing quizzes */}
+            <div className="lg:col-span-2 space-y-4">
+              <h2 className="text-base font-bold text-theme-dark/80 pl-2">Existing Quizzes ({quizzes.length})</h2>
+              <div className="bg-theme-card border border-theme-dark/5 rounded-[32px] overflow-hidden shadow-sm">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-theme-sidebar/40 border-b border-theme-dark/5 text-theme-dark/50 text-[10px] font-bold uppercase tracking-wider">
+                        <th className="p-4 pl-6">Quiz Title</th>
+                        <th className="p-4">Topic ID</th>
+                        <th className="p-4">Created At</th>
+                        <th className="p-4 pr-6 text-right">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-theme-dark/5 text-theme-dark/80">
+                      {quizzes.map((q) => (
+                        <tr key={q.id} className="hover:bg-theme-cardHover transition-all text-xs">
+                          <td className="p-4 pl-6 font-bold text-theme-dark">{q.title}</td>
+                          <td className="p-4 text-theme-dark/70 font-semibold">Topic #{q.topic_id}</td>
+                          <td className="p-4 text-theme-dark/50">{new Date(q.created_at).toLocaleDateString()}</td>
+                          <td className="p-4 pr-6 text-right">
+                            <button
+                              disabled={actionLoading}
+                              onClick={() => handleDeleteQuiz(q.id)}
+                              className="text-theme-pink hover:bg-theme-pink/15 p-2 rounded-full transition-all"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                      {quizzes.length === 0 && (
+                        <tr>
+                          <td colSpan="4" className="p-8 text-center text-theme-dark/40 font-semibold">No quizzes available.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
                 </div>
+              </div>
+            </div>
+
+            {/* Create Quiz Form */}
+            <div className="bg-theme-card border border-theme-dark/5 p-6 rounded-[32px] shadow-sm h-fit">
+              <h2 className="text-base font-bold flex items-center space-x-2 mb-6 text-theme-dark uppercase tracking-wide">
+                <Plus className="w-5 h-5 text-theme-accent" />
+                <span>Create New Quiz</span>
+              </h2>
+              <form onSubmit={handleCreateQuiz} className="space-y-5">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Topic</label>
-                  <select
+                  <label className="block text-xs font-bold uppercase tracking-wider text-theme-dark/50 mb-2 pl-2">Quiz Title</label>
+                  <input
+                    type="text"
                     required
-                    value={materialForm.topic_id}
-                    onChange={(e) => setMaterialForm({ ...materialForm, topic_id: parseInt(e.target.value) })}
-                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-3 text-sm text-slate-900 focus:border-brand-500 focus:outline-none"
-                  >
-                    <option value="">Choose Topic</option>
-                    {filteredTopics.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-                  </select>
+                    placeholder="e.g. Advanced Database Optimization"
+                    value={quizForm.title}
+                    onChange={(e) => setQuizForm({ ...quizForm, title: e.target.value })}
+                    className="w-full bg-theme-sidebar border-none rounded-full px-4 py-2.5 text-xs text-theme-dark font-semibold focus:ring-2 focus:ring-theme-accent transition-all"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-theme-dark/50 mb-2 pl-2">Subject</label>
+                    <select
+                      value={selectedSubject}
+                      onChange={(e) => { setSelectedSubject(e.target.value); setQuizForm({ ...quizForm, topic_id: '' }); }}
+                      className="w-full bg-theme-sidebar border-none rounded-full px-3 py-2.5 text-xs text-theme-dark font-semibold focus:ring-2 focus:ring-theme-accent"
+                    >
+                      <option value="">Subject</option>
+                      {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-theme-dark/50 mb-2 pl-2">Topic</label>
+                    <select
+                      required
+                      value={quizForm.topic_id}
+                      onChange={(e) => setQuizForm({ ...quizForm, topic_id: parseInt(e.target.value) })}
+                      className="w-full bg-theme-sidebar border-none rounded-full px-3 py-2.5 text-xs text-theme-dark font-semibold focus:ring-2 focus:ring-theme-accent"
+                    >
+                      <option value="">Topic</option>
+                      {filteredTopics.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Questions Builder */}
+                <div className="space-y-4 pt-4 border-t border-theme-dark/5 max-h-96 overflow-y-auto custom-scrollbar pr-1">
+                  <div className="flex justify-between items-center">
+                    <label className="block text-[10px] font-black uppercase tracking-wider text-theme-dark/50">Questions ({quizForm.questions.length})</label>
+                    <button
+                      type="button"
+                      onClick={addQuestion}
+                      className="flex items-center text-xs text-theme-accent font-bold hover:underline"
+                    >
+                      <Plus className="w-3.5 h-3.5 mr-1" /> <span>Add</span>
+                    </button>
+                  </div>
+
+                  {quizForm.questions.map((q, qIndex) => (
+                    <div key={qIndex} className="p-4 bg-theme-sidebar/40 border border-theme-dark/5 rounded-2xl space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-bold text-theme-dark/50">Question #{qIndex + 1}</span>
+                        {quizForm.questions.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeQuestion(qIndex)}
+                            className="text-[10px] text-theme-pink font-bold hover:underline"
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
+                      <div>
+                        <input
+                          type="text"
+                          required
+                          placeholder="Question Prompt"
+                          value={q.question_text}
+                          onChange={(e) => handleQuestionChange(qIndex, 'question_text', e.target.value)}
+                          className="w-full bg-theme-sidebar border-none rounded-xl px-3 py-2 text-xs text-theme-dark font-semibold focus:ring-2 focus:ring-theme-accent"
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        {q.options.map((opt, oIndex) => (
+                          <input
+                            key={oIndex}
+                            type="text"
+                            required
+                            placeholder={`Option ${oIndex + 1}`}
+                            value={opt}
+                            onChange={(e) => handleOptionChange(qIndex, oIndex, e.target.value)}
+                            className="w-full bg-theme-sidebar border-none rounded-xl px-3 py-2 text-xs text-theme-dark font-semibold focus:ring-2 focus:ring-theme-accent"
+                          />
+                        ))}
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-[9px] uppercase font-bold text-theme-dark/50 pl-1">Correct</label>
+                          <select
+                            value={q.correct_index}
+                            onChange={(e) => handleQuestionChange(qIndex, 'correct_index', parseInt(e.target.value))}
+                            className="w-full bg-theme-sidebar border-none rounded-full px-2 py-1.5 text-xs text-theme-dark font-semibold focus:ring-2 focus:ring-theme-accent"
+                          >
+                            {q.options.map((_, idx) => (
+                              <option key={idx} value={idx}>Opt {idx + 1}</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-[9px] uppercase font-bold text-theme-dark/50 pl-1">Difficulty</label>
+                          <select
+                            value={q.difficulty}
+                            onChange={(e) => handleQuestionChange(qIndex, 'difficulty', e.target.value)}
+                            className="w-full bg-theme-sidebar border-none rounded-full px-2 py-1.5 text-xs text-theme-dark font-semibold focus:ring-2 focus:ring-theme-accent"
+                          >
+                            <option value="easy">Easy</option>
+                            <option value="medium">Medium</option>
+                            <option value="hard">Hard</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={actionLoading}
+                  className="w-full bg-theme-accent hover:bg-theme-accent/90 disabled:bg-theme-sidebar/55 text-white font-bold py-2.5 rounded-full transition-all flex items-center justify-center space-x-2"
+                >
+                  {actionLoading && <Loader2 className="w-4 h-4 animate-spin text-white" />}
+                  <span>Publish Interactive Quiz</span>
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* tab: MATERIALS */}
+        {activeTab === 'materials' && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-6">
+            {/* List study resources */}
+            <div className="lg:col-span-2 space-y-4">
+              <h2 className="text-base font-bold text-theme-dark/80 pl-2">Platform Study Resources ({studyMaterials.length})</h2>
+              <div className="bg-theme-card border border-theme-dark/5 rounded-[32px] overflow-hidden shadow-sm">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-theme-sidebar/40 border-b border-theme-dark/5 text-theme-dark/50 text-[10px] font-bold uppercase tracking-wider">
+                        <th className="p-4 pl-6">Resource Details</th>
+                        <th className="p-4">Topic</th>
+                        <th className="p-4">Type</th>
+                        <th className="p-4 pr-6 text-right">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-theme-dark/5 text-theme-dark/80">
+                      {studyMaterials.map((m) => (
+                        <tr key={m.id} className="hover:bg-theme-cardHover transition-all text-xs">
+                          <td className="p-4 pl-6">
+                            <p className="font-bold text-theme-dark">{m.title}</p>
+                            <p className="text-[10px] text-theme-dark/50 truncate w-64">{m.description || 'No description'}</p>
+                            <a 
+                              href={m.url} 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              className="text-[10px] text-theme-accent hover:underline inline-block mt-0.5 truncate w-64 font-bold"
+                            >
+                              {m.url}
+                            </a>
+                          </td>
+                          <td className="p-4 text-theme-dark/70 font-semibold">{m.topic_name || `Topic #${m.topic_id}`}</td>
+                          <td className="p-4">
+                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-theme-sidebar text-theme-dark border border-theme-dark/5 capitalize">
+                              {m.material_type}
+                            </span>
+                          </td>
+                          <td className="p-4 pr-6 text-right">
+                            <button
+                              disabled={actionLoading}
+                              onClick={() => handleDeleteMaterial(m.id)}
+                              className="text-theme-pink hover:bg-theme-pink/15 p-2 rounded-full transition-all"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                      {studyMaterials.length === 0 && (
+                        <tr>
+                          <td colSpan="4" className="p-8 text-center text-theme-dark/40 font-semibold">No study resources uploaded.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
                 </div>
               </div>
+            </div>
 
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Resource Format</label>
-                <select
-                  value={materialForm.material_type}
-                  onChange={(e) => setMaterialForm({ ...materialForm, material_type: e.target.value })}
-                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-3 text-sm text-slate-900 focus:border-brand-500 focus:outline-none"
+            {/* Upload Resource Form */}
+            <div className="bg-theme-card border border-theme-dark/5 p-6 rounded-[32px] shadow-sm h-fit">
+              <h2 className="text-base font-bold flex items-center space-x-2 mb-6 text-theme-dark uppercase tracking-wide">
+                <FileUp className="w-5 h-5 text-theme-accent" />
+                <span>Upload Study Resource</span>
+              </h2>
+              <form onSubmit={handleCreateMaterial} className="space-y-5">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-theme-dark/50 mb-2 pl-2">Resource Title</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. CPU Register Maps"
+                    value={materialForm.title}
+                    onChange={(e) => setMaterialForm({ ...materialForm, title: e.target.value })}
+                    className="w-full bg-theme-sidebar border-none rounded-full px-4 py-2.5 text-xs text-theme-dark font-semibold focus:ring-2 focus:ring-theme-accent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-theme-dark/50 mb-2 pl-2">Brief Description</label>
+                  <textarea
+                    placeholder="Summarize the resource content..."
+                    value={materialForm.description}
+                    onChange={(e) => setMaterialForm({ ...materialForm, description: e.target.value })}
+                    className="w-full bg-theme-sidebar border-none rounded-2xl px-4 py-3 text-xs text-theme-dark font-semibold focus:ring-2 focus:ring-theme-accent h-20 resize-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-theme-dark/50 mb-2 pl-2">External URL</label>
+                  <input
+                    type="url"
+                    required
+                    placeholder="https://example.com/lecture.pdf"
+                    value={materialForm.url}
+                    onChange={(e) => setMaterialForm({ ...materialForm, url: e.target.value })}
+                    className="w-full bg-theme-sidebar border-none rounded-full px-4 py-2.5 text-xs text-theme-dark font-semibold focus:ring-2 focus:ring-theme-accent"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-theme-dark/50 mb-2 pl-2">Subject</label>
+                    <select
+                      value={selectedSubject}
+                      onChange={(e) => { setSelectedSubject(e.target.value); setMaterialForm({ ...materialForm, topic_id: '' }); }}
+                      className="w-full bg-theme-sidebar border-none rounded-full px-3 py-2.5 text-xs text-theme-dark font-semibold focus:ring-2 focus:ring-theme-accent"
+                    >
+                      <option value="">Subject</option>
+                      {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-theme-dark/50 mb-2 pl-2">Topic</label>
+                    <select
+                      required
+                      value={materialForm.topic_id}
+                      onChange={(e) => setMaterialForm({ ...materialForm, topic_id: parseInt(e.target.value) })}
+                      className="w-full bg-theme-sidebar border-none rounded-full px-3 py-2.5 text-xs text-theme-dark font-semibold focus:ring-2 focus:ring-theme-accent"
+                    >
+                      <option value="">Topic</option>
+                      {filteredTopics.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-theme-dark/50 mb-2 pl-2">Resource Format</label>
+                  <select
+                    value={materialForm.material_type}
+                    onChange={(e) => setMaterialForm({ ...materialForm, material_type: e.target.value })}
+                    className="w-full bg-theme-sidebar border-none rounded-full px-3 py-2.5 text-xs text-theme-dark font-semibold focus:ring-2 focus:ring-theme-accent"
+                  >
+                    <option value="article">Article / Webpage</option>
+                    <option value="pdf">PDF Lecture Document</option>
+                    <option value="video">Video Tutorial</option>
+                  </select>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={actionLoading}
+                  className="w-full bg-theme-accent hover:bg-theme-accent/90 disabled:bg-theme-sidebar/55 text-white font-bold py-2.5 rounded-full transition-all flex items-center justify-center space-x-2"
                 >
-                  <option value="article">Article / Webpage</option>
-                  <option value="pdf">PDF Lecture Document</option>
-                  <option value="video">Video Tutorial</option>
-                </select>
+                  {actionLoading && <Loader2 className="w-4 h-4 animate-spin text-white" />}
+                  <span>Publish Study Resource</span>
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* tab: USERS */}
+        {activeTab === 'users' && (
+          <div className="space-y-4 pb-6">
+            <h2 className="text-base font-bold text-theme-dark/80 pl-2">Platform User Directory ({users.length})</h2>
+            <div className="bg-theme-card border border-theme-dark/5 rounded-[32px] overflow-hidden shadow-sm">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-theme-sidebar/40 border-b border-theme-dark/5 text-theme-dark/50 text-[10px] font-bold uppercase tracking-wider">
+                      <th className="p-4 pl-6">Username</th>
+                      <th className="p-4">Email Address</th>
+                      <th className="p-4">Registered Date</th>
+                      <th className="p-4">Administrative Role</th>
+                      <th className="p-4 pr-6 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-theme-dark/5 text-theme-dark/80">
+                    {users.map((u) => (
+                      <tr key={u.id} className="hover:bg-theme-cardHover transition-all text-xs">
+                        <td className="p-4 pl-6 font-bold text-theme-dark">{u.username}</td>
+                        <td className="p-4 text-theme-dark/70 font-semibold">{u.email}</td>
+                        <td className="p-4 text-theme-dark/50">{new Date(u.created_at).toLocaleDateString()}</td>
+                        <td className="p-4">
+                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border capitalize ${
+                            u.is_admin 
+                              ? 'bg-theme-teal/15 text-theme-teal border-theme-teal/20' 
+                              : 'bg-theme-sidebar text-theme-dark/70 border-theme-dark/5'
+                          }`}>
+                            {u.is_admin ? 'Admin' : 'Student'}
+                          </span>
+                        </td>
+                        <td className="p-4 pr-6 text-right">
+                          <button
+                            disabled={actionLoading || u.email === 'admin@adaptiq.com'}
+                            onClick={() => handleToggleAdmin(u.id)}
+                            className={`text-[10px] font-bold px-4 py-1.5 rounded-full border transition-all ${
+                              u.email === 'admin@adaptiq.com'
+                                ? 'bg-theme-sidebar text-theme-dark/30 border-theme-dark/5 cursor-not-allowed'
+                                : u.is_admin 
+                                  ? 'bg-theme-pink/15 text-theme-pink border-theme-pink/20 hover:bg-theme-pink/20' 
+                                  : 'bg-theme-teal/15 text-theme-teal border-theme-teal/20 hover:bg-theme-teal/20'
+                            }`}
+                          >
+                            {u.is_admin ? 'Revoke Admin' : 'Grant Admin'}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-
-              <button
-                type="submit"
-                disabled={actionLoading}
-                className="w-full bg-brand-600 hover:bg-brand-700 disabled:bg-brand-300 text-white font-bold py-3 rounded-xl transition-all flex items-center justify-center space-x-2 shadow-md shadow-brand-100"
-              >
-                {actionLoading && <Loader2 className="w-4 h-4 animate-spin text-white" />}
-                <span>Publish Study Resource</span>
-              </button>
-            </form>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* tab: USERS */}
-      {activeTab === 'users' && (
-        <div className="space-y-6">
-          <h2 className="text-xl font-bold text-slate-900">Platform User Directory ({users.length})</h2>
-          <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-wider">
-                  <th className="p-4">Username</th>
-                  <th className="p-4">Email Address</th>
-                  <th className="p-4">Registered Date</th>
-                  <th className="p-4">Administrative Role</th>
-                  <th className="p-4 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
-                {users.map((u) => (
-                  <tr key={u.id} className="hover:bg-slate-50/50 transition-all text-sm">
-                    <td className="p-4 font-bold text-slate-900">{u.username}</td>
-                    <td className="p-4 text-slate-600 font-semibold">{u.email}</td>
-                    <td className="p-4 text-slate-500">{new Date(u.created_at).toLocaleDateString()}</td>
-                    <td className="p-4">
-                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border capitalize ${
-                        u.is_admin 
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
-                          : 'bg-slate-100 text-slate-600 border-slate-200'
-                      }`}>
-                        {u.is_admin ? 'Admin' : 'Student'}
-                      </span>
-                    </td>
-                    <td className="p-4 text-right">
-                      <button
-                        disabled={actionLoading || u.email === 'admin@adaptiq.com'}
-                        onClick={() => handleToggleAdmin(u.id)}
-                        className={`text-xs font-bold px-3 py-1.5 rounded-lg border transition-all ${
-                          u.email === 'admin@adaptiq.com'
-                            ? 'bg-slate-100 text-slate-300 border-slate-200 cursor-not-allowed'
-                            : u.is_admin 
-                              ? 'bg-rose-50 text-rose-600 border-rose-200 hover:bg-rose-100/50' 
-                              : 'bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100/50'
-                        }`}
-                      >
-                        {u.is_admin ? 'Revoke Admin' : 'Grant Admin'}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {/* tab: NOTES */}
+        {activeTab === 'notes' && (
+          <div className="space-y-4 pb-6">
+            <h2 className="text-base font-bold text-theme-dark/80 pl-2">Moderated Community Notes ({notes.length})</h2>
+            <div className="bg-theme-card border border-theme-dark/5 rounded-[32px] overflow-hidden shadow-sm">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-theme-sidebar/40 border-b border-theme-dark/5 text-theme-dark/50 text-[10px] font-bold uppercase tracking-wider">
+                      <th className="p-4 pl-6">Note Details</th>
+                      <th className="p-4">Uploader</th>
+                      <th className="p-4">Subject</th>
+                      <th className="p-4">Uploaded At</th>
+                      <th className="p-4 pr-6 text-right">Moderation Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-theme-dark/5 text-theme-dark/80">
+                    {notes.map((n) => (
+                      <tr key={n.id} className="hover:bg-theme-cardHover transition-all text-xs">
+                        <td className="p-4 pl-6">
+                          <p className="font-bold text-theme-dark">{n.title}</p>
+                          <p className="text-[10px] text-theme-dark/50 truncate w-64">{n.description || 'No description'}</p>
+                        </td>
+                        <td className="p-4 text-theme-dark/70 font-semibold">
+                          <p className="font-bold">{n.uploader_username}</p>
+                          <p className="text-[9px] text-theme-dark/40 font-mono font-medium">{n.uploader_id}</p>
+                        </td>
+                        <td className="p-4">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-theme-sidebar text-theme-dark border border-theme-dark/5 capitalize">
+                            {n.subject}
+                          </span>
+                        </td>
+                        <td className="p-4 text-theme-dark/50">{new Date(n.created_at).toLocaleDateString()}</td>
+                        <td className="p-4 pr-6 text-right">
+                          <button
+                            disabled={actionLoading}
+                            onClick={() => handleDeleteNote(n.id)}
+                            className="text-theme-pink hover:bg-theme-pink/15 p-2 rounded-full transition-all"
+                            title="Delete note"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {notes.length === 0 && (
+                      <tr>
+                        <td colSpan="5" className="p-8 text-center text-theme-dark/40 font-semibold">No community notes found.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* tab: NOTES */}
-      {activeTab === 'notes' && (
-        <div className="space-y-6">
-          <h2 className="text-xl font-bold text-slate-900">Moderated Community Notes ({notes.length})</h2>
-          <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-wider">
-                  <th className="p-4">Note Details</th>
-                  <th className="p-4">Uploader</th>
-                  <th className="p-4">Subject</th>
-                  <th className="p-4">Uploaded At</th>
-                  <th className="p-4 text-right">Moderation Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
-                {notes.map((n) => (
-                  <tr key={n.id} className="hover:bg-slate-50/50 transition-all text-sm">
-                    <td className="p-4">
-                      <p className="font-bold text-slate-900">{n.title}</p>
-                      <p className="text-xs text-slate-500 truncate w-64">{n.description || 'No description'}</p>
-                    </td>
-                    <td className="p-4 text-slate-600 font-semibold">
-                      <p className="font-bold">{n.uploader_username}</p>
-                      <p className="text-[10px] text-slate-400 font-mono font-medium">{n.uploader_id}</p>
-                    </td>
-                    <td className="p-4">
-                      <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200 capitalize">
-                        {n.subject}
-                      </span>
-                    </td>
-                    <td className="p-4 text-slate-500">{new Date(n.created_at).toLocaleDateString()}</td>
-                    <td className="p-4 text-right">
-                      <button
-                        disabled={actionLoading}
-                        onClick={() => handleDeleteNote(n.id)}
-                        className="text-rose-600 hover:text-rose-500 p-2 rounded-lg hover:bg-rose-50 transition-all"
-                        title="Delete note (moderation)"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-                {notes.length === 0 && (
-                  <tr>
-                    <td colSpan="5" className="p-8 text-center text-slate-400">No community notes found.</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 };
