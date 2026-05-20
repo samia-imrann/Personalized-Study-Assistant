@@ -32,7 +32,6 @@ export const QuizAttemptPage = () => {
   };
 
   const handleSubmit = async () => {
-    // Check if all answered
     if (Object.keys(answers).length < quiz.questions.length) {
       if (!window.confirm("You have unanswered questions. Submit anyway?")) {
         return;
@@ -59,130 +58,138 @@ export const QuizAttemptPage = () => {
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-500"></div>
+      <div className="h-full flex items-center justify-center bg-theme-bg">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-theme-accent"></div>
       </div>
     );
   }
 
-  if (!quiz) return <div className="p-8 text-center">Quiz not found</div>;
+  if (!quiz) return <div className="p-8 text-center text-theme-dark">Quiz not found</div>;
 
   return (
-    <div className="p-8 max-w-4xl mx-auto space-y-8">
-      <button 
-        onClick={() => navigate('/quizzes')}
-        className="flex items-center text-slate-500 hover:text-brand-600 transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4 mr-1" /> Back to Quizzes
-      </button>
-
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900">{quiz.title}</h1>
-        <p className="text-slate-500 mt-1">{quiz.questions.length} questions</p>
+    <div className="h-full flex flex-col max-w-[900px] mx-auto animate-fade-in pb-4">
+      {/* Top Navigation Row */}
+      <div className="flex justify-between items-center mb-6 shrink-0">
+        <button 
+          onClick={() => navigate('/quizzes')}
+          className="flex items-center text-theme-dark/60 hover:text-theme-dark transition-colors font-semibold text-sm"
+        >
+          <ArrowLeft className="w-4 h-4 mr-1.5" /> Back to Quizzes
+        </button>
       </div>
 
-      {result ? (
-        <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 text-green-600 mb-4">
+      {/* Header Info */}
+      <div className="mb-6 shrink-0">
+        <h1 className="text-2xl font-display font-bold text-theme-dark uppercase tracking-wide">{quiz.title}</h1>
+        <p className="text-theme-dark/60 text-sm mt-1">{quiz.questions.length} questions</p>
+      </div>
+
+      {/* Scrollable Quiz Content */}
+      <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar min-h-0">
+        {result ? (
+          <div className="bg-theme-card rounded-[32px] p-8 shadow-sm border border-theme-dark/5 text-center mb-6">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-theme-teal/10 text-theme-teal mb-4">
               <CheckCircle2 className="w-10 h-10" />
             </div>
-            <h2 className="text-3xl font-bold text-slate-900">Quiz Completed!</h2>
-            <p className="text-xl text-slate-600 mt-2">You scored <span className="font-bold text-brand-600">{result.score}</span> out of {result.total_questions} ({result.percentage}%)</p>
-          </div>
+            <h2 className="text-2xl font-display font-bold text-theme-dark">Quiz Completed!</h2>
+            <p className="text-lg text-theme-dark/70 mt-2">
+              You scored <span className="font-bold text-theme-accent">{result.score}</span> out of {result.total_questions} ({result.percentage}%)
+            </p>
 
-          <div className="space-y-6 mt-8">
-            <h3 className="text-lg font-bold text-slate-900 border-b pb-2">Topic Breakdown</h3>
-            {result.topic_breakdown.map((tb, idx) => (
-              <div key={idx} className="flex flex-col space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="font-medium text-slate-700">{tb.topic_name}</span>
-                  <span className={`text-sm font-bold ${tb.score < 60 ? 'text-orange-500' : 'text-green-600'}`}>
-                    {tb.score}% ({tb.correct}/{tb.total})
+            <div className="space-y-4 mt-8 max-w-md mx-auto text-left">
+              <h3 className="text-base font-bold text-theme-dark border-b border-theme-dark/10 pb-2">Topic Breakdown</h3>
+              {result.topic_breakdown.map((tb, idx) => (
+                <div key={idx} className="flex flex-col space-y-1.5">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="font-semibold text-theme-dark/80">{tb.topic_name}</span>
+                    <span className={`font-bold ${tb.score < 60 ? 'text-theme-pink' : 'text-theme-teal'}`}>
+                      {tb.score}% ({tb.correct}/{tb.total})
+                    </span>
+                  </div>
+                  <div className="w-full bg-theme-sidebar rounded-full h-2">
+                    <div 
+                      className={`h-2 rounded-full ${tb.score < 60 ? 'bg-theme-pink' : 'bg-theme-teal'}`} 
+                      style={{ width: `${tb.score}%` }}
+                    ></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 flex justify-center space-x-4">
+              <button 
+                onClick={() => navigate('/')}
+                className="px-6 py-2.5 bg-theme-accent hover:bg-theme-accent/90 text-white rounded-full font-bold text-sm transition-colors"
+              >
+                Go to Dashboard
+              </button>
+              <button 
+                onClick={() => navigate('/quizzes')}
+                className="px-6 py-2.5 bg-theme-sidebar hover:bg-theme-sidebar/80 text-theme-dark rounded-full font-bold text-sm transition-colors"
+              >
+                Take Another Quiz
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-6 pb-6">
+            {quiz.questions.map((q, qIndex) => (
+              <div key={q.id} className="bg-theme-card rounded-[32px] p-6 shadow-sm border border-theme-dark/5">
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-base font-bold text-theme-dark flex items-start leading-snug">
+                    <span className="text-theme-accent mr-2">{qIndex + 1}.</span> 
+                    {q.question_text}
+                  </h3>
+                  <span className={`text-[10px] px-2.5 py-0.5 rounded-full uppercase font-black tracking-wider ${
+                    q.difficulty === 'easy' ? 'bg-theme-teal/10 text-theme-teal' : 
+                    q.difficulty === 'medium' ? 'bg-theme-yellow/10 text-theme-yellow' : 'bg-theme-pink/10 text-theme-pink'
+                  }`}>
+                    {q.difficulty}
                   </span>
                 </div>
-                <div className="w-full bg-slate-100 rounded-full h-2">
-                  <div 
-                    className={`h-2 rounded-full ${tb.score < 60 ? 'bg-orange-500' : 'bg-green-500'}`} 
-                    style={{ width: `${tb.score}%` }}
-                  ></div>
+                
+                <div className="space-y-2.5 mt-4">
+                  {q.options.map((opt, oIndex) => {
+                    const isSelected = answers[q.id] === oIndex;
+                    return (
+                      <button
+                        key={oIndex}
+                        onClick={() => handleSelectOption(q.id, oIndex)}
+                        className={`w-full flex items-center p-4 rounded-2xl border text-left transition-all duration-200 text-sm font-semibold ${
+                          isSelected 
+                            ? 'border-theme-accent bg-theme-accent/5 text-theme-dark shadow-[0_0_0_1px_rgba(59,130,246,1)]' 
+                            : 'border-theme-dark/5 hover:border-theme-dark/10 hover:bg-theme-cardHover'
+                        }`}
+                      >
+                        {isSelected ? (
+                          <CheckCircle2 className="w-5 h-5 text-theme-accent mr-3 shrink-0" />
+                        ) : (
+                          <Circle className="w-5 h-5 text-theme-dark/20 mr-3 shrink-0" />
+                        )}
+                        <span>{opt}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             ))}
-          </div>
 
-          <div className="mt-10 flex justify-center space-x-4">
-            <button 
-              onClick={() => navigate('/')}
-              className="px-6 py-3 bg-brand-600 text-white rounded-xl font-medium hover:bg-brand-700 transition-colors"
-            >
-              Go to Dashboard
-            </button>
-            <button 
-              onClick={() => navigate('/quizzes')}
-              className="px-6 py-3 bg-slate-200 text-slate-800 rounded-xl font-medium hover:bg-slate-300 transition-colors"
-            >
-              Take Another Quiz
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="space-y-8">
-          {quiz.questions.map((q, qIndex) => (
-            <div key={q.id} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-lg font-medium text-slate-900">
-                  <span className="text-brand-500 font-bold mr-2">{qIndex + 1}.</span> 
-                  {q.question_text}
-                </h3>
-                <span className={`text-xs px-2 py-1 rounded uppercase font-bold tracking-wider ${
-                  q.difficulty === 'easy' ? 'bg-green-100 text-green-700' : 
-                  q.difficulty === 'medium' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'
-                }`}>
-                  {q.difficulty}
-                </span>
+            {/* Sticky Submission Bar */}
+            <div className="bg-theme-card p-5 rounded-[32px] border border-theme-dark/5 flex justify-between items-center shadow-lg sticky bottom-0">
+              <div className="text-theme-dark/60 font-semibold text-sm">
+                Answered: <span className="font-bold text-theme-dark">{Object.keys(answers).length}</span> / {quiz.questions.length}
               </div>
-              
-              <div className="space-y-3 mt-4">
-                {q.options.map((opt, oIndex) => {
-                  const isSelected = answers[q.id] === oIndex;
-                  return (
-                    <button
-                      key={oIndex}
-                      onClick={() => handleSelectOption(q.id, oIndex)}
-                      className={`w-full flex items-center p-4 rounded-xl border text-left transition-all-smooth ${
-                        isSelected 
-                          ? 'border-brand-500 bg-brand-50 text-brand-900 shadow-[0_0_0_1px_rgba(14,165,233,1)]' 
-                          : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-                      }`}
-                    >
-                      {isSelected ? (
-                        <CheckCircle2 className="w-5 h-5 text-brand-500 mr-3 shrink-0" />
-                      ) : (
-                        <Circle className="w-5 h-5 text-slate-300 mr-3 shrink-0" />
-                      )}
-                      <span>{opt}</span>
-                    </button>
-                  );
-                })}
-              </div>
+              <button
+                onClick={handleSubmit}
+                disabled={submitting || Object.keys(answers).length === 0}
+                className="px-6 py-2.5 bg-theme-accent hover:bg-theme-accent/90 disabled:bg-theme-sidebar/50 disabled:text-theme-dark/30 text-white rounded-full font-bold text-sm transition-colors flex items-center"
+              >
+                {submitting ? 'Submitting...' : 'Submit Quiz'}
+              </button>
             </div>
-          ))}
-
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 flex justify-between items-center sticky bottom-8 shadow-xl">
-            <div className="text-slate-600">
-              Answered: <span className="font-bold text-slate-900">{Object.keys(answers).length}</span> / {quiz.questions.length}
-            </div>
-            <button
-              onClick={handleSubmit}
-              disabled={submitting || Object.keys(answers).length === 0}
-              className="px-8 py-3 bg-brand-600 text-white rounded-xl font-bold hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-            >
-              {submitting ? 'Submitting...' : 'Submit Quiz'}
-            </button>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
