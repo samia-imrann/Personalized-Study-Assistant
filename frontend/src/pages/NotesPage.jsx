@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
-import { Search, Upload, FileText, Star, X, Sparkles, FolderOpen, Calendar, User } from 'lucide-react';
+import { Search, Upload, FileText, Star, X, FolderOpen, Calendar, User, Loader2 } from 'lucide-react';
 
 export const NotesPage = () => {
   const [notes, setNotes] = useState([]);
@@ -74,142 +74,151 @@ export const NotesPage = () => {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-8 animate-fade-in">
+    <div className="h-full flex flex-col max-w-[1400px] mx-auto animate-fade-in pb-4">
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200 pb-6">
+      <div className="flex justify-between items-center mb-8 shrink-0">
         <div>
-          <div className="flex items-center space-x-3">
-            <FileText className="w-8 h-8 text-brand-600" />
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight font-display">Community Notes</h1>
-          </div>
-          <p className="text-slate-500 mt-2 text-sm">Discover, study, and share curated academic resources with peers globally.</p>
+          <h1 className="text-3xl font-display font-medium text-theme-dark uppercase tracking-wide flex items-center gap-2">
+            <FileText className="w-8 h-8 text-theme-accent" />
+            Community Notes
+          </h1>
+          <p className="text-theme-dark/60 mt-1 text-sm">Discover, study, and share curated academic resources with peers globally.</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center justify-center px-6 py-3.5 bg-brand-600 text-white rounded-xl font-bold text-sm hover:bg-brand-700 hover:shadow-lg active:scale-95 transition-all shadow-md shadow-brand-100/50"
+          className="flex items-center justify-center px-6 py-2.5 bg-theme-accent hover:bg-theme-accent/90 text-white rounded-full font-bold text-sm transition-all"
         >
           <Upload className="w-4 h-4 mr-2" /> Upload Note
         </button>
       </div>
 
-      {/* Search Bar */}
-      <form onSubmit={handleSearch} className="relative max-w-3xl">
-        <input
-          type="text"
-          placeholder="Search notes by subject, title, or topic..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-14 pr-24 py-4.5 rounded-2xl border border-slate-200/80 shadow-premium focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none text-base text-slate-800 placeholder-slate-400 transition-all"
-        />
-        <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
-        <button 
-          type="submit" 
-          className="absolute right-3.5 top-1/2 -translate-y-1/2 bg-slate-950 text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-900 transition-all"
-        >
-          Search
-        </button>
-      </form>
+      {/* Main Content Grid */}
+      <div className="flex-1 flex flex-col gap-6 min-h-0">
+        
+        {/* Search Bar */}
+        <form onSubmit={handleSearch} className="relative w-full max-w-3xl shrink-0">
+          <input
+            type="text"
+            placeholder="Search notes by subject, title, or topic..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-12 pr-28 py-3 rounded-full border-none bg-theme-card focus:ring-2 focus:ring-theme-accent text-theme-dark text-sm font-semibold transition-all shadow-sm placeholder:text-theme-dark/40"
+          />
+          <Search className="absolute left-4 top-3.5 text-theme-dark/40 w-4 h-4" />
+          <button 
+            type="submit" 
+            className="absolute right-2 top-1.5 bg-theme-dark text-white px-5 py-1.5 rounded-full text-xs font-bold hover:bg-theme-dark/95 transition-all"
+          >
+            Search
+          </button>
+        </form>
 
-      {/* Notes Grid */}
-      {loading ? (
-        <div className="flex flex-col justify-center items-center py-20">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-brand-600"></div>
-        </div>
-      ) : notes.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {notes.map(note => (
-            <Link 
-              key={note.id} 
-              to={`/notes/${note.id}`} 
-              className="bg-white rounded-3xl p-6 border border-slate-200/80 hover:border-brand-500/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full shadow-sm"
-            >
-              <div className="flex justify-between items-start mb-5">
-                <div className="w-12 h-12 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
-                  <FileText className="w-5 h-5" />
-                </div>
-                {note.average_rating > 0 && (
-                  <div className="flex items-center space-x-1 bg-amber-50 text-amber-600 px-2.5 py-1 rounded-lg text-xs font-bold border border-amber-100">
-                    <Star className="w-3.5 h-3.5 fill-current" />
-                    <span>{note.average_rating.toFixed(1)}</span>
+        {/* Notes Container - Scrollable */}
+        <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar min-h-0">
+          {loading ? (
+            <div className="flex flex-col justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-theme-accent"></div>
+            </div>
+          ) : notes.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6">
+              {notes.map(note => (
+                <Link 
+                  key={note.id} 
+                  to={`/notes/${note.id}`} 
+                  className="bg-theme-card rounded-[32px] p-6 shadow-sm flex flex-col justify-between hover:shadow-md hover:bg-theme-cardHover transition-all duration-300 group"
+                >
+                  <div>
+                    <div className="flex justify-between items-start mb-5">
+                      <div className="w-12 h-12 bg-theme-accent/10 text-theme-accent rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                        <FileText className="w-5 h-5" />
+                      </div>
+                      {note.average_rating > 0 && (
+                        <div className="flex items-center space-x-1 bg-theme-yellow/10 text-theme-yellow px-2.5 py-1 rounded-lg text-xs font-bold">
+                          <Star className="w-3.5 h-3.5 fill-current" />
+                          <span>{note.average_rating.toFixed(1)}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <h3 className="text-lg font-bold text-theme-dark mb-2 font-display line-clamp-1">{note.title}</h3>
+                    <p className="text-theme-dark/60 text-sm mb-6 line-clamp-2 leading-relaxed">{note.description || "No description provided."}</p>
                   </div>
-                )}
-              </div>
 
-              <h3 className="text-xl font-bold text-slate-900 mb-2 font-display group-hover:text-brand-600 transition-colors line-clamp-1">{note.title}</h3>
-              <p className="text-slate-500 text-sm mb-5 line-clamp-2 flex-1 leading-relaxed">{note.description || "No description provided."}</p>
+                  <div className="pt-4 border-t border-theme-dark/5">
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {note.subject && (
+                        <span className="bg-theme-sidebar text-theme-dark/80 text-xs font-bold px-2.5 py-0.5 rounded-full border border-theme-dark/5 capitalize">
+                          {note.subject}
+                        </span>
+                      )}
+                      {note.topic && (
+                        <span className="bg-theme-sidebar text-theme-dark/80 text-xs font-bold px-2.5 py-0.5 rounded-full border border-theme-dark/5 capitalize">
+                          {note.topic}
+                        </span>
+                      )}
+                    </div>
+                    
+                    <div className="flex items-center justify-between text-[10px] text-theme-dark/40 font-bold uppercase tracking-wider">
+                      <span className="flex items-center gap-1.5"><User className="w-3.5 h-3.5 text-theme-dark/30" /> {note.uploader_username}</span>
+                      <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-theme-dark/30" /> {new Date(note.created_at).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-24 bg-theme-card rounded-[32px] border border-dashed border-theme-dark/10 p-8 shadow-sm">
+              <FolderOpen className="w-12 h-12 text-theme-dark/20 mx-auto mb-4" />
+              <h3 className="text-lg font-bold text-theme-dark font-display">No notes found</h3>
+              <p className="text-theme-dark/50 mt-1 text-sm">Be the first to upload and share comprehensive lecture guides!</p>
+            </div>
+          )}
+        </div>
 
-              <div className="mt-auto pt-4 border-t border-slate-100">
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {note.subject && (
-                    <span className="bg-slate-100 text-slate-600 text-xs font-bold px-2.5 py-0.5 rounded-full border border-slate-200/60 capitalize">
-                      {note.subject}
-                    </span>
-                  )}
-                  {note.topic && (
-                    <span className="bg-slate-100 text-slate-600 text-xs font-bold px-2.5 py-0.5 rounded-full border border-slate-200/60 capitalize">
-                      {note.topic}
-                    </span>
-                  )}
-                </div>
-                
-                <div className="flex items-center justify-between text-[11px] text-slate-400 font-bold uppercase tracking-wider">
-                  <span className="flex items-center gap-1.5"><User className="w-3.5 h-3.5 text-slate-400" /> {note.uploader_username}</span>
-                  <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-slate-400" /> {new Date(note.created_at).toLocaleDateString()}</span>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-24 bg-white rounded-3xl border border-dashed border-slate-200 p-8 shadow-sm">
-          <FolderOpen className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-          <h3 className="text-lg font-bold text-slate-900 font-display">No notes found</h3>
-          <p className="text-slate-500 mt-1 text-sm">Be the first to upload and share comprehensive lecture guides!</p>
-        </div>
-      )}
+      </div>
 
       {/* Upload Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl shadow-xl w-full max-w-lg overflow-hidden border border-slate-200">
-            <div className="flex justify-between items-center p-6 border-b border-slate-100 bg-white">
-              <h2 className="text-xl font-bold text-slate-900 font-display">Upload Resource Guide</h2>
-              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-50 transition-all">
+        <div className="fixed inset-0 bg-theme-dark/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div className="bg-theme-card rounded-[32px] shadow-xl w-full max-w-lg overflow-hidden border border-theme-dark/5">
+            <div className="flex justify-between items-center p-6 border-b border-theme-dark/5">
+              <h2 className="text-lg font-bold text-theme-dark font-display uppercase tracking-wide">Upload Resource Guide</h2>
+              <button onClick={() => setShowModal(false)} className="text-theme-dark/40 hover:text-theme-dark/60 p-1 rounded-full hover:bg-theme-sidebar transition-all">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleUpload} className="p-6 space-y-5 bg-white">
+            <form onSubmit={handleUpload} className="p-6 space-y-5">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Resource Title *</label>
-                <input type="text" required value={uploadTitle} onChange={e => setUploadTitle(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-slate-900 text-sm font-semibold transition-all bg-white" placeholder="e.g. Operating Systems Cheat Sheet" />
+                <label className="block text-xs font-bold uppercase tracking-wider text-theme-dark/50 mb-2 pl-2">Resource Title *</label>
+                <input type="text" required value={uploadTitle} onChange={e => setUploadTitle(e.target.value)} className="w-full px-4 py-2.5 rounded-full border-none bg-theme-sidebar focus:ring-2 focus:ring-theme-accent text-theme-dark text-sm font-semibold transition-all" placeholder="e.g. Operating Systems Cheat Sheet" />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Description</label>
-                <textarea rows="3" value={uploadDesc} onChange={e => setUploadDesc(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-slate-900 text-sm font-semibold transition-all bg-white resize-none" placeholder="Brief details about topics covered in this document..." />
+                <label className="block text-xs font-bold uppercase tracking-wider text-theme-dark/50 mb-2 pl-2">Description</label>
+                <textarea rows="3" value={uploadDesc} onChange={e => setUploadDesc(e.target.value)} className="w-full px-4 py-3 rounded-2xl border-none bg-theme-sidebar focus:ring-2 focus:ring-theme-accent text-theme-dark text-sm font-semibold transition-all resize-none" placeholder="Brief details about topics covered..." />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Subject</label>
-                  <input type="text" value={uploadTags.subject} onChange={e => setUploadTags({ ...uploadTags, subject: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-slate-900 text-sm font-semibold transition-all bg-white" placeholder="e.g. OS" />
+                  <label className="block text-xs font-bold uppercase tracking-wider text-theme-dark/50 mb-2 pl-2">Subject</label>
+                  <input type="text" value={uploadTags.subject} onChange={e => setUploadTags({ ...uploadTags, subject: e.target.value })} className="w-full px-4 py-2.5 rounded-full border-none bg-theme-sidebar focus:ring-2 focus:ring-theme-accent text-theme-dark text-sm font-semibold transition-all" placeholder="e.g. OS" />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Topic</label>
-                  <input type="text" value={uploadTags.topic} onChange={e => setUploadTags({ ...uploadTags, topic: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-slate-900 text-sm font-semibold transition-all bg-white" placeholder="e.g. Deadlocks" />
+                  <label className="block text-xs font-bold uppercase tracking-wider text-theme-dark/50 mb-2 pl-2">Topic</label>
+                  <input type="text" value={uploadTags.topic} onChange={e => setUploadTags({ ...uploadTags, topic: e.target.value })} className="w-full px-4 py-2.5 rounded-full border-none bg-theme-sidebar focus:ring-2 focus:ring-theme-accent text-theme-dark text-sm font-semibold transition-all" placeholder="e.g. Deadlocks" />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Select File *</label>
-                <input type="file" required onChange={e => setUploadFile(e.target.files[0])} className="w-full p-3 rounded-xl border border-slate-200 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-slate-900 text-sm bg-slate-50" />
-                <p className="text-[10px] text-slate-400 font-bold mt-1.5 uppercase">PDF, DOCX, TXT, PPTX or images (Max 20MB)</p>
+                <label className="block text-xs font-bold uppercase tracking-wider text-theme-dark/50 mb-2 pl-2">Select File *</label>
+                <input type="file" required onChange={e => setUploadFile(e.target.files[0])} className="w-full p-3 rounded-2xl border border-dashed border-theme-dark/10 text-theme-dark text-sm bg-theme-sidebar/50 focus:ring-2 focus:ring-theme-accent outline-none" />
+                <p className="text-[10px] text-theme-dark/40 font-bold mt-1.5 uppercase pl-2">PDF, DOCX, TXT, PPTX or images (Max 20MB)</p>
               </div>
 
-              <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">
-                <button type="button" onClick={() => setShowModal(false)} className="px-5 py-2.5 text-slate-600 hover:bg-slate-100 rounded-xl transition-all font-bold text-xs">Cancel</button>
-                <button type="submit" disabled={uploading} className="px-6 py-2.5 bg-brand-600 text-white rounded-xl hover:bg-brand-700 transition-all font-bold text-xs disabled:opacity-50 flex items-center gap-1.5">
+              <div className="pt-4 flex justify-end gap-3 border-t border-theme-dark/5">
+                <button type="button" onClick={() => setShowModal(false)} className="px-5 py-2 text-theme-dark/60 hover:bg-theme-sidebar rounded-full transition-all font-bold text-xs">Cancel</button>
+                <button type="submit" disabled={uploading} className="px-6 py-2 bg-theme-accent hover:bg-theme-accent/90 text-white rounded-full transition-all font-bold text-xs disabled:opacity-50 flex items-center gap-1.5">
                   {uploading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   <span>{uploading ? 'Uploading...' : 'Publish Note'}</span>
                 </button>
