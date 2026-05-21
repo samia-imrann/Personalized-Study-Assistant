@@ -119,10 +119,19 @@ async def delete_quiz(
     db: AsyncSession = Depends(get_db),
 ):
     """Delete a quiz from the database."""
+    from sqlalchemy import delete
+    from app.models.quiz import QuizAttempt, Question
+    
     result = await db.execute(select(Quiz).where(Quiz.id == quiz_id))
     quiz = result.scalar_one_or_none()
     if not quiz:
         raise HTTPException(status_code=404, detail="Quiz not found")
+        
+    # Manually delete dependent records to avoid Foreign Key constraint errors 
+    # on cloud databases where ON DELETE CASCADE might not be properly migrated
+    await db.execute(delete(QuizAttempt).where(QuizAttempt.quiz_id == quiz_id))
+    await db.execute(delete(Question).where(Question.quiz_id == quiz_id))
+    
     await db.delete(quiz)
     await db.commit()
 
