@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import { ArrowLeft, CheckCircle2, Circle, AlertCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Circle, XCircle } from 'lucide-react';
 
 export const QuizAttemptPage = () => {
   const { id } = useParams();
@@ -87,48 +87,107 @@ export const QuizAttemptPage = () => {
       {/* Scrollable Quiz Content */}
       <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar min-h-0">
         {result ? (
-          <div className="bg-theme-card rounded-[32px] p-8 shadow-sm border border-theme-dark/5 text-center mb-6">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-theme-teal/10 text-theme-teal mb-4">
-              <CheckCircle2 className="w-10 h-10" />
-            </div>
-            <h2 className="text-2xl font-display font-bold text-theme-dark">Quiz Completed!</h2>
-            <p className="text-lg text-theme-dark/70 mt-2">
-              You scored <span className="font-bold text-theme-accent">{result.score}</span> out of {result.total_questions} ({result.percentage}%)
-            </p>
+          <div className="space-y-6 pb-6">
+            {/* Score Summary Card */}
+            <div className="bg-theme-card rounded-[32px] p-8 shadow-sm border border-theme-dark/5 text-center">
+              <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full mb-4 ${
+                result.percentage >= 60 ? 'bg-theme-teal/10 text-theme-teal' : 'bg-theme-pink/10 text-theme-pink'
+              }`}>
+                <CheckCircle2 className="w-10 h-10" />
+              </div>
+              <h2 className="text-2xl font-display font-bold text-theme-dark">Quiz Completed!</h2>
+              <p className="text-lg text-theme-dark/70 mt-2">
+                You scored <span className={`font-bold ${ result.percentage >= 60 ? 'text-theme-teal' : 'text-theme-pink'}`}>{result.score}</span> out of {result.total_questions} ({result.percentage}%)
+              </p>
 
-            <div className="space-y-4 mt-8 max-w-md mx-auto text-left">
-              <h3 className="text-base font-bold text-theme-dark border-b border-theme-dark/10 pb-2">Topic Breakdown</h3>
-              {result.topic_breakdown.map((tb, idx) => (
-                <div key={idx} className="flex flex-col space-y-1.5">
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="font-semibold text-theme-dark/80">{tb.topic_name}</span>
-                    <span className={`font-bold ${tb.score < 60 ? 'text-theme-pink' : 'text-theme-teal'}`}>
-                      {tb.score}% ({tb.correct}/{tb.total})
-                    </span>
+              <div className="space-y-4 mt-8 max-w-md mx-auto text-left">
+                <h3 className="text-base font-bold text-theme-dark border-b border-theme-dark/10 pb-2">Topic Breakdown</h3>
+                {result.topic_breakdown.map((tb, idx) => (
+                  <div key={idx} className="flex flex-col space-y-1.5">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="font-semibold text-theme-dark/80">{tb.topic_name}</span>
+                      <span className={`font-bold ${tb.score < 60 ? 'text-theme-pink' : 'text-theme-teal'}`}>
+                        {tb.score}% ({tb.correct}/{tb.total})
+                      </span>
+                    </div>
+                    <div className="w-full bg-theme-sidebar rounded-full h-2">
+                      <div
+                        className={`h-2 rounded-full ${tb.score < 60 ? 'bg-theme-pink' : 'bg-theme-teal'}`}
+                        style={{ width: `${tb.score}%` }}
+                      ></div>
+                    </div>
                   </div>
-                  <div className="w-full bg-theme-sidebar rounded-full h-2">
-                    <div 
-                      className={`h-2 rounded-full ${tb.score < 60 ? 'bg-theme-pink' : 'bg-theme-teal'}`} 
-                      style={{ width: `${tb.score}%` }}
-                    ></div>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
+
+              <div className="mt-8 flex justify-center space-x-4">
+                <button
+                  onClick={() => navigate('/')}
+                  className="px-6 py-2.5 bg-theme-accent hover:bg-theme-accent/90 text-white rounded-full font-bold text-sm transition-colors"
+                >
+                  Go to Dashboard
+                </button>
+                <button
+                  onClick={() => navigate('/quizzes')}
+                  className="px-6 py-2.5 bg-theme-sidebar hover:bg-theme-sidebar/80 text-theme-dark rounded-full font-bold text-sm transition-colors"
+                >
+                  Take Another Quiz
+                </button>
+              </div>
             </div>
 
-            <div className="mt-8 flex justify-center space-x-4">
-              <button 
-                onClick={() => navigate('/')}
-                className="px-6 py-2.5 bg-theme-accent hover:bg-theme-accent/90 text-white rounded-full font-bold text-sm transition-colors"
-              >
-                Go to Dashboard
-              </button>
-              <button 
-                onClick={() => navigate('/quizzes')}
-                className="px-6 py-2.5 bg-theme-sidebar hover:bg-theme-sidebar/80 text-theme-dark rounded-full font-bold text-sm transition-colors"
-              >
-                Take Another Quiz
-              </button>
+            {/* Answer Review Section */}
+            <div>
+              <h2 className="text-sm font-bold text-theme-dark/70 uppercase tracking-wider mb-4 pl-2">Answer Review</h2>
+              <div className="space-y-4">
+                {result.question_results.map((qr, qIndex) => (
+                  <div key={qr.question_id} className={`bg-theme-card rounded-[32px] p-6 shadow-sm border ${
+                    qr.is_correct ? 'border-theme-teal/30' : 'border-theme-pink/30'
+                  }`}>
+                    <div className="flex items-start justify-between mb-4 gap-3">
+                      <h3 className="text-sm font-bold text-theme-dark leading-snug">
+                        <span className="text-theme-accent mr-1.5">{qIndex + 1}.</span>
+                        {qr.question_text}
+                      </h3>
+                      {qr.is_correct ? (
+                        <span className="shrink-0 flex items-center gap-1 text-[10px] bg-theme-teal/10 text-theme-teal px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider">
+                          <CheckCircle2 className="w-3 h-3" /> Correct
+                        </span>
+                      ) : (
+                        <span className="shrink-0 flex items-center gap-1 text-[10px] bg-theme-pink/10 text-theme-pink px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider">
+                          <XCircle className="w-3 h-3" /> Wrong
+                        </span>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      {qr.options.map((opt, oIndex) => {
+                        const isChosen = qr.chosen_index === oIndex;
+                        const isCorrect = qr.correct_index === oIndex;
+                        let style = 'border-theme-dark/5 text-theme-dark/60';
+                        let Icon = Circle;
+                        if (isCorrect) {
+                          style = 'border-theme-teal/40 bg-theme-teal/10 text-theme-teal font-bold';
+                          Icon = CheckCircle2;
+                        } else if (isChosen && !isCorrect) {
+                          style = 'border-theme-pink/40 bg-theme-pink/10 text-theme-pink font-bold';
+                          Icon = XCircle;
+                        }
+                        return (
+                          <div
+                            key={oIndex}
+                            className={`w-full flex items-center p-3.5 rounded-2xl border text-sm ${style}`}
+                          >
+                            <Icon className="w-4 h-4 mr-3 shrink-0" />
+                            <span>{opt}</span>
+                            {isCorrect && <span className="ml-auto text-[10px] font-black uppercase tracking-wider opacity-70">Correct Answer</span>}
+                            {isChosen && !isCorrect && <span className="ml-auto text-[10px] font-black uppercase tracking-wider opacity-70">Your Answer</span>}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         ) : (

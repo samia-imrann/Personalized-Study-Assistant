@@ -56,6 +56,15 @@ class TopicScoreOut(BaseModel):
     total: int
 
 
+class QuestionResultOut(BaseModel):
+    question_id: int
+    question_text: str
+    options: list[str]
+    chosen_index: int
+    correct_index: int
+    is_correct: bool
+
+
 class AttemptResultOut(BaseModel):
     attempt_id: int
     quiz_id: int
@@ -63,6 +72,7 @@ class AttemptResultOut(BaseModel):
     total_questions: int
     percentage: float
     topic_breakdown: list[TopicScoreOut]
+    question_results: list[QuestionResultOut]
 
 
 class AttemptHistoryOut(BaseModel):

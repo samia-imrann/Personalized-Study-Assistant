@@ -13,6 +13,7 @@ from app.schemas.quiz import (
     AttemptRequest,
     AttemptResultOut,
     AttemptHistoryOut,
+    QuestionResultOut,
     QuizDetailOut,
     QuizOut,
     SubjectOut,
@@ -120,6 +121,7 @@ async def submit_attempt(
     topic_correct: dict[int, int] = {}
     topic_total: dict[int, int] = {}
     answers_submitted = []
+    question_results = []
 
     for ans in body.answers:
         q = question_map.get(ans.question_id)
@@ -135,6 +137,16 @@ async def submit_attempt(
             topic_correct.setdefault(tid, 0)
         answers_submitted.append(
             {"question_id": ans.question_id, "chosen_index": ans.chosen_index}
+        )
+        question_results.append(
+            QuestionResultOut(
+                question_id=q.id,
+                question_text=q.question_text,
+                options=q.options,
+                chosen_index=ans.chosen_index,
+                correct_index=q.correct_index,
+                is_correct=is_correct,
+            )
         )
 
     total = len(quiz.questions)
@@ -178,4 +190,5 @@ async def submit_attempt(
         total_questions=total,
         percentage=round(score / total * 100, 1) if total else 0.0,
         topic_breakdown=breakdown,
+        question_results=question_results,
     )
