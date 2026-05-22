@@ -112,7 +112,7 @@ export const QuizAttemptPage = () => {
                     </div>
                     <div className="w-full bg-theme-sidebar rounded-full h-2">
                       <div
-                        className={`h-2 rounded-full ${tb.score < 60 ? 'bg-theme-pink' : 'bg-theme-teal'}`}
+                        className={`h-2 rounded-full ${tb.score < 60 ? 'bg-theme-blue' : 'bg-theme-teal'}`}
                         style={{ width: `${tb.score}%` }}
                       ></div>
                     </div>
