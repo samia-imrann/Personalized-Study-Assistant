@@ -92,3 +92,13 @@ async def root():
 @app.get("/health", tags=["Health"])
 async def health():
     return {"status": "healthy"}
+from urllib.parse import urlparse
+
+db = urlparse(settings.database_url)
+
+print("========== DATABASE CONFIG ==========")
+print("DB USER:", db.username)
+print("DB HOST:", db.hostname)
+print("DB PORT:", db.port)
+print("DB NAME:", db.path)
+print("=====================================")
