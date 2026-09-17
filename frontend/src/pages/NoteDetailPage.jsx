@@ -99,7 +99,7 @@ export const NoteDetailPage = () => {
             
             <div className="flex items-center space-x-3 shrink-0">
               <a 
-                href={`http://localhost:8000/${note.file_path}`} 
+                href={`${(import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '')}/${note.file_path}`} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="flex items-center px-5 py-2 bg-theme-accent hover:bg-theme-accent/90 text-white rounded-full font-bold text-xs transition-colors"

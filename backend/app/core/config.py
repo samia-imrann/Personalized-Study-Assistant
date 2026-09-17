@@ -30,6 +30,11 @@ class Settings(BaseSettings):
         env_file = "../.env"
         env_file_encoding = "utf-8"
 
+    def frontend_origins(self) -> list[str]:
+        origins = [origin.strip() for origin in self.frontend_url.split(",") if origin.strip()]
+        defaults = ["http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173"]
+        return list(dict.fromkeys(origins + defaults))
+
 
 @lru_cache()
 def get_settings() -> Settings:

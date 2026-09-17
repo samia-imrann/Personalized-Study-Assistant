@@ -11,7 +11,7 @@ export const useCollab = (docId, token) => {
     if (!docId || !token) return;
 
     const connect = () => {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      const apiUrl = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
       const wsUrl = apiUrl.replace(/^http/, 'ws');
       const url = `${wsUrl}/documents/ws/${docId}?token=${token}`;
       ws.current = new WebSocket(url);
