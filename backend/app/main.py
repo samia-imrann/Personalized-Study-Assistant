@@ -52,14 +52,10 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS configuration
-origins = settings.frontend_origins()
-if "https://personalized-study-assistant.vercel.app" not in origins:
-    origins.append("https://personalized-study-assistant.vercel.app")
-
+# CORS configuration — allow Vercel and local origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
