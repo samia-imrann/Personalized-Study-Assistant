@@ -10,14 +10,6 @@ from app.core.config import settings
 from app.api.routes import auth, quiz, performance, notes, collab, admin
 from app.services.ml_engine import get_model
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["https://personalized-study-assistant.vercel.app"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup — pre-load ML model
@@ -60,14 +52,18 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS
-#app.add_middleware(
- #   CORSMiddleware,
-  #  allow_origins=settings.frontend_origins(),
-   # allow_credentials=True,
-    #allow_methods=["*"],
-    #allow_headers=["*"],
-#)####
+# CORS configuration
+origins = settings.frontend_origins()
+if "https://personalized-study-assistant.vercel.app" not in origins:
+    origins.append("https://personalized-study-assistant.vercel.app")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Serve uploaded files
 uploads_dir = Path(settings.upload_dir)
