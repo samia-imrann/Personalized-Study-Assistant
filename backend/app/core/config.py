@@ -1,5 +1,7 @@
 from pydantic_settings import BaseSettings
+from pydantic import field_validator
 from functools import lru_cache
+import re
 
 
 class Settings(BaseSettings):
@@ -10,6 +12,28 @@ class Settings(BaseSettings):
     # Database
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/adaptiq"
     database_url_sync: str = "postgresql+psycopg2://postgres:postgres@localhost:5432/adaptiq"
+
+    @field_validator("database_url", mode="before")
+    def assemble_async_db_url(cls, v: str) -> str:
+        if isinstance(v, str):
+            if v.startswith("postgres://"):
+                v = "postgresql+asyncpg://" + v[len("postgres://"):]
+            elif v.startswith("postgresql://"):
+                v = "postgresql+asyncpg://" + v[len("postgresql://"):]
+            elif re.match(r"^postgresql\+[a-zA-Z0-9_]+://", v):
+                v = re.sub(r"^postgresql\+[a-zA-Z0-9_]+://", "postgresql+asyncpg://", v)
+        return v
+
+    @field_validator("database_url_sync", mode="before")
+    def assemble_sync_db_url(cls, v: str) -> str:
+        if isinstance(v, str):
+            if v.startswith("postgres://"):
+                v = "postgresql+psycopg2://" + v[len("postgres://"):]
+            elif v.startswith("postgresql://"):
+                v = "postgresql+psycopg2://" + v[len("postgresql://"):]
+            elif re.match(r"^postgresql\+[a-zA-Z0-9_]+://", v):
+                v = re.sub(r"^postgresql\+[a-zA-Z0-9_]+://", "postgresql+psycopg2://", v)
+        return v
 
     # Redis
     redis_url: str = "redis://localhost:6379/0"

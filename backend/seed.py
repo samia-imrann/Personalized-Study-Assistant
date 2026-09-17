@@ -22,7 +22,7 @@ SCHEMA_FILE = ROOT / "database" / "adaptiq_schema.sql"
 
 
 def connect_kwargs() -> dict:
-    """Resolve connection parameters without letting libpq parse a URI."""
+    """Resolve connection parameters safely supporting Render DATABASE_URL format and passwords with special characters."""
 
     # Discrete vars win when present: no parsing, no escaping rules.
     if os.environ.get("PGHOST"):
@@ -37,40 +37,47 @@ def connect_kwargs() -> dict:
 
     url = (os.environ.get("DATABASE_URL_SYNC") or os.environ.get("DATABASE_URL") or "").strip()
     if not url:
-        sys.exit("DATABASE_URL_SYNC is not set. Refusing to silently fall back to localhost.")
+        sys.exit("DATABASE_URL / DATABASE_URL_SYNC is not set.")
 
-    # Normalise the scheme: strip any SQLAlchemy driver suffix, accept postgres://
     scheme, sep, rest = url.partition("://")
     if not sep:
-        sys.exit("Database URL has no '://' — is it a libpq keyword string?")
-    scheme = scheme.split("+", 1)[0]
-    if scheme == "postgres":
-        scheme = "postgresql"
-    if scheme != "postgresql":
-        sys.exit(f"Unexpected scheme {scheme!r} in database URL.")
+        sys.exit("Database URL has no '://'")
 
-    parts = urlsplit(f"postgresql://{rest}")
+    # Split userinfo and host:port/dbname from the LAST '@' in the authority
+    if "@" in rest:
+        userinfo, host_path = rest.rsplit("@", 1)
+    else:
+        userinfo, host_path = "", rest
 
-    try:
-        port = parts.port or 5432
-    except ValueError:
-        bad = parts.netloc.rsplit(":", 1)[-1]
-        sys.exit(
-            f"Malformed database URL: the port field holds {len(bad)} non-numeric "
-            "characters. That is your password in the wrong slot, or a password "
-            "containing an unescaped '/', '@' or ':'. Use PGHOST/PGPORT/PGUSER/"
-            "PGPASSWORD/PGDATABASE instead, or percent-encode the credentials."
-        )
+    user, password = "", ""
+    if ":" in userinfo:
+        user, password = userinfo.split(":", 1)
+    else:
+        user = userinfo
 
-    if not parts.hostname:
-        sys.exit("Malformed database URL: no hostname could be parsed.")
+    if "/" in host_path:
+        host_port, db_and_query = host_path.split("/", 1)
+    else:
+        host_port, db_and_query = host_path, ""
+
+    dbname = db_and_query.split("?")[0] if db_and_query else "postgres"
+
+    if ":" in host_port:
+        host, port_str = host_port.rsplit(":", 1)
+        try:
+            port = int(port_str)
+        except ValueError:
+            port = 5432
+    else:
+        host = host_port
+        port = 5432
 
     return dict(
-        host=parts.hostname,
+        host=host,
         port=port,
-        user=unquote(parts.username or ""),
-        password=unquote(parts.password or ""),
-        dbname=unquote(parts.path.lstrip("/")) or "postgres",
+        user=unquote(user),
+        password=unquote(password),
+        dbname=unquote(dbname),
         sslmode=os.environ.get("PGSSLMODE", "require"),
     )
 
