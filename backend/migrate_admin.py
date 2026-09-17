@@ -10,11 +10,20 @@ from dotenv import load_dotenv
 
 load_dotenv(Path(__file__).parent.parent / ".env")
 
-DB_URL = os.environ.get(
-    "DATABASE_URL_SYNC",
+import re
+
+# Build sync connection string from env (support both DATABASE_URL_SYNC and Render's default DATABASE_URL)
+raw_db_url = os.environ.get("DATABASE_URL_SYNC") or os.environ.get(
+    "DATABASE_URL",
     "postgresql+psycopg2://postgres:postgres@localhost:5432/adaptiq",
 )
-dsn = DB_URL.replace("postgresql+psycopg2://", "postgresql://")
+
+def get_psycopg2_dsn(url: str) -> str:
+    if url.startswith("postgres://"):
+        url = "postgresql://" + url[len("postgres://"):]
+    return re.sub(r"^postgresql\+[a-zA-Z0-9_]+://", "postgresql://", url)
+
+dsn = get_psycopg2_dsn(raw_db_url)
 
 
 def run_migration():
