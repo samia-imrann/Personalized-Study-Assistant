@@ -50,12 +50,21 @@ app = FastAPI(
     description="AI-Powered Personalized Study Assistant",
     version="1.0.0",
     lifespan=lifespan,
+    redirect_slashes=False,
 )
 
-# CORS configuration — allow Vercel and local origins
+# CORS configuration
+origins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:5173",
+    "https://personalized-study-assistant.vercel.app",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
+    allow_origin_regex=r"https://.*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
